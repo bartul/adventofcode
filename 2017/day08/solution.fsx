@@ -7,9 +7,9 @@ type Instruction = {
     RegisterName : string
     Mod : Modifier<int>
     Value : int 
-    RegisterToCheck : string 
-    Condition : Condition<int>
-    ConditionValue : int
+    CondRegister : string 
+    Cond : Condition<int>
+    CondValue : int
 }
 
 let parseModifier str =
@@ -34,37 +34,37 @@ let parseInstruction (str:string) =
         RegisterName = parts.[0]
         Mod = parts.[1] |> parseModifier 
         Value = parts.[2] |> int
-        RegisterToCheck = parts.[4] 
-        Condition = parts.[5] |> parseCondition
-        ConditionValue = parts.[6] |> int
+        CondRegister = parts.[4] 
+        Cond = parts.[5] |> parseCondition
+        CondValue = parts.[6] |> int
     }
 
 let loadData () =
     File.ReadAllLines(__SOURCE_DIRECTORY__ + "/input.txt")
     |> Array.map parseInstruction
 
-let addNewIfEmpty key value (map:Map<'a, 'b>) =
+let addNewIfMissing key value (map:Map<'a, 'b>) =
     if map.ContainsKey key then 
         map
     else  
         map.Add(key, value) 
-let getGretter a b =
+let greater a b =
     if a > b then a else b
 
-let folder (set, maxValue) instr =
-    let set = 
-        set 
-        |> addNewIfEmpty instr.RegisterName 0 
-        |> addNewIfEmpty instr.RegisterToCheck 0 
-    if instr.Condition set.[instr.RegisterToCheck] instr.ConditionValue then
-        let currentValue = set.[instr.RegisterName]
+let folder (map, max) instr =
+    let map = 
+        map 
+        |> addNewIfMissing instr.RegisterName 0 
+        |> addNewIfMissing instr.CondRegister 0 
+    if instr.Cond map.[instr.CondRegister] instr.CondValue then
+        let currentValue = map.[instr.RegisterName]
         let newValue = instr.Mod currentValue instr.Value
-        set |> Map.remove instr.RegisterName |> Map.add instr.RegisterName newValue, getGretter maxValue newValue
+        map |> Map.remove instr.RegisterName |> Map.add instr.RegisterName newValue, greater max newValue
     else
-        set, maxValue        
+        map, max        
 
-let set, result2 = loadData() |> Array.fold folder (Map.empty, 0)
-let result1 = set |> Map.toArray |> Array.maxBy (fun (_, x) -> x) |> snd
+let map, result2 = loadData() |> Array.fold folder (Map.empty, 0)
+let result1 = map |> Map.toArray |> Array.map snd |> Array.max
 
 printfn "Solution 1: %i" result1
 printfn "Solution 2: %i" result2
