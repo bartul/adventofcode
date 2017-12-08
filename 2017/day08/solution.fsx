@@ -1,3 +1,5 @@
+#!/usr/local/bin/fsharpi
+
 open System
 open System.IO
 
@@ -12,13 +14,11 @@ type Instruction = {
     CondValue : int
 }
 
-let parseModifier str =
-    match str with
+let parseModifier = function
     | "inc" -> (+)
     | "dec" -> (-)
     | _ -> failwith "Unrecognized modifier"
-let parseCondition str =
-    match str with
+let parseCondition = function
     | "==" -> (=)
     | "!=" -> (<>)
     | "<" -> (<)
