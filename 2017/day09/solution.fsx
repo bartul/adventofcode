@@ -15,12 +15,12 @@ type State = {
 let folder state item = 
     match item, state.InGarbage, state.IgnoreNext with 
     | _, true, true -> { state with IgnoreNext = false }
-    | '{', false, false -> { state with CurrentDepth = state.CurrentDepth + 1; IgnoreNext = false }
-    | '}', false, false -> { state with TotalScore = state.TotalScore + state.CurrentDepth;  CurrentDepth = state.CurrentDepth - 1; IgnoreNext = false }
-    | '<', false, false -> { state with InGarbage = true; IgnoreNext = false }
-    | '>', true, false -> { state with InGarbage = false; IgnoreNext = false }
+    | '{', false, false -> { state with CurrentDepth = state.CurrentDepth + 1 }
+    | '}', false, false -> { state with TotalScore = state.TotalScore + state.CurrentDepth;  CurrentDepth = state.CurrentDepth - 1 }
+    | '<', false, false -> { state with InGarbage = true }
+    | '>', true, false -> { state with InGarbage = false }
     | '!', true, false -> { state with IgnoreNext = true }
-    | _, true, false -> { state with GarbageCount = state.GarbageCount + 1; IgnoreNext = false }
+    | _, true, false -> { state with GarbageCount = state.GarbageCount + 1 }
     | _ -> { state with IgnoreNext = false}
 
 let result = data |> Seq.fold folder { TotalScore = 0; CurrentDepth = 0; InGarbage = false; IgnoreNext = false; GarbageCount = 0 }
