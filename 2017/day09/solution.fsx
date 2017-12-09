@@ -21,7 +21,7 @@ let folder state item =
     | '>', true, false -> { state with InGarbage = false }
     | '!', true, false -> { state with IgnoreNext = true }
     | _, true, false -> { state with GarbageCount = state.GarbageCount + 1 }
-    | _ -> { state with IgnoreNext = false}
+    | _ -> state
 
 let result = data |> Seq.fold folder { TotalScore = 0; CurrentDepth = 0; InGarbage = false; IgnoreNext = false; GarbageCount = 0 }
 
