@@ -16,7 +16,7 @@ let folder state item =
     match item, state.InGarbage, state.IgnoreNext with 
     | _, true, true -> { state with IgnoreNext = false }
     | '{', false, false -> { state with CurrentDepth = state.CurrentDepth + 1 }
-    | '}', false, false -> { state with TotalScore = state.TotalScore + state.CurrentDepth;  CurrentDepth = state.CurrentDepth - 1 }
+    | '}', false, false -> { state with TotalScore = state.TotalScore + state.CurrentDepth; CurrentDepth = state.CurrentDepth - 1 }
     | '<', false, false -> { state with InGarbage = true }
     | '>', true, false -> { state with InGarbage = false }
     | '!', true, false -> { state with IgnoreNext = true }
