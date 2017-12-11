@@ -23,11 +23,12 @@ let data =
     |> Array.map parseMovement
     |> List.ofArray
 
-let distance x y =
-    let z : int = - x - y
-    [x; y; z] |> List.map Math.Abs |> List.max    
-
 let x, y = data |> List.fold (fun (x, y) i -> i (x, y)) (0, 0)
+
+let distance x y = 
+    [x; y; 0 - x - y] 
+    |> List.map Math.Abs 
+    |> List.max    
 
 let result1 = distance x y
 printfn "Solution 1: %i" result1
