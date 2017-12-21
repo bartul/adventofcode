@@ -1,5 +1,5 @@
 open System
-
+7
 let split (c:string) (str:string) =
     str.Split([|c|], StringSplitOptions.RemoveEmptyEntries) |> List.ofArray
 type Rule = { Input : char [] []; Output : char [] []}
@@ -51,15 +51,17 @@ let doesMatch (patternA:char [] []) (patternB:char [] []) =
     else
         false
 let findMatch (ruleSet : Rule list) (pattern:char [] [])  =
-    let rule = ruleSet |> List.find (fun i -> doesMatch pattern i.Input)
-    rule.Output
+    let rule = ruleSet |> List.tryFind (fun i -> doesMatch pattern i.Input)
+    match rule with 
+    | Some x -> x.Output
+    | None -> failwithf "Failed to find rule for pattern %A" pattern
 
 let splitQ chunkSize totalSize =
     let spliters = [ 0..chunkSize..(totalSize - 1) ]
     List.foldBack (fun i s -> (spliters |> List.map (fun j -> i, j)) :: s) spliters []
 let pointsOfQ x y size =
-    let xs = [|x..(x + size)|]
-    let ys = [|y..(y + size)|]
+    let xs = [|x..(x + size - 1)|]
+    let ys = [|y..(y + size - 1)|]
     xs |> Array.map (fun i -> ys |> Array.map (fun j -> i, j)) 
 let slicePattern x y size (image : char [] []) =
     let points = pointsOfQ x y size 
@@ -92,22 +94,19 @@ let rec runRec counter ruleSet max (image : char [] []) =
     if counter < max then
         runRec (counter + 1) ruleSet max newImage
     else newImage    
-let run = runRec 0
+let run = runRec 1
 
 let startingImage = parsePattern ".#./..#/###"
 let input = 
-    ["../.# => ##./#../...";
-    ".#./..#/### => #..#/..../..../#..#"]
-    // System.IO.File.ReadAllLines(__SOURCE_DIRECTORY__ + "/input.txt") |> Array.toList
+    // ["../.# => ##./#../...";
+    // ".#./..#/### => #..#/..../..../#..#"]
+    System.IO.File.ReadAllLines(__SOURCE_DIRECTORY__ + "/input.txt") |> Array.toList
+let iterations = 
+    // 2
+    5
 let rules = input |> List.map parseRule
+let result1 = run rules iterations startingImage // |> Array.collect (fun i -> i |> Array.filter (fun x -> x = '#')) |> Array.length
+// printfn "Solution 1: %i" result1
 
-// let chunkStaringPoints (image : char [] []) = splitQ 3 image.Length  
 
-// startingImage |> chunkStaringPoints
-// [[(0, 0)]] |> List.map (fun i -> i |> List.map (fun (x, y) -> slicePattern x y 1 startingImage))  
-
-slicePattern 0 0 3 startingImage
-//pointsOfQ 0 0 3
-pointsOfQ 0 0 3
-// let result = run rules 1 startingImage
 
