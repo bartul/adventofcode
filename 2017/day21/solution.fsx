@@ -1,5 +1,5 @@
 open System
-7
+
 let split (c:string) (str:string) =
     str.Split([|c|], StringSplitOptions.RemoveEmptyEntries) |> List.ofArray
 type Rule = { Input : char [] []; Output : char [] []}
@@ -105,8 +105,8 @@ let iterations =
     // 2
     5
 let rules = input |> List.map parseRule
-let result1 = run rules iterations startingImage // |> Array.collect (fun i -> i |> Array.filter (fun x -> x = '#')) |> Array.length
-// printfn "Solution 1: %i" result1
+let result1 = run rules iterations startingImage |> Array.collect (fun i -> i |> Array.filter (fun x -> x = '#')) |> Array.length
+printfn "Solution 1: %i" result1
 
 
 
