@@ -46,7 +46,8 @@ let doesMatch (patternA:char [] []) (patternB:char [] []) =
         let rotation : char [] [] list -> char [] [] list = 
             [1..rotations] 
             |> foldSwithed (fun s _ -> (rotateRight (List.head s)) :: s)
-        let all = (rotation [patternA]) @ (rotation [(flip patternA)]) |> List.distinct
+        // let all = (rotation [patternA]) @ (rotation [(flip patternA)]) |> List.distinct
+        let all = (rotation [patternA]) |> List.distinct
         all |> List.contains patternB
     else
         false
@@ -85,12 +86,17 @@ let stichVertical (imageCuts : char [] [] list) =
 let stich (imageCuts : char [] [] list list) =
     imageCuts |> List.map stichHorizontal |> stichVertical
 
+let numOfPixels a = a |> Array.collect (fun i -> i |> Array.filter (fun x -> x = '#')) |> Array.length
+let printImage (image : char [] []) =
+    image |> Array.iter (fun i -> printfn "%s" (String i))    
 let rec runRec counter ruleSet max (image : char [] []) =
     let newImage = 
         image 
         |> cut
         |> List.map (fun i -> i |> List.map (findMatch ruleSet))
         |> stich
+    printfn "%i. %i" counter (newImage |> numOfPixels)  
+    printImage newImage      
     if counter < max then
         runRec (counter + 1) ruleSet max newImage
     else newImage    
@@ -99,14 +105,24 @@ let run = runRec 1
 let startingImage = parsePattern ".#./..#/###"
 let input = 
     // ["../.# => ##./#../...";
-    // ".#./..#/### => #..#/..../..../#..#"]
+    // ".#./§..#/### => #..#/..../..../#..#"]
     System.IO.File.ReadAllLines(__SOURCE_DIRECTORY__ + "/input.txt") |> Array.toList
 let iterations = 
     // 2
-    5
+    2
 let rules = input |> List.map parseRule
-let result1 = run rules iterations startingImage |> Array.collect (fun i -> i |> Array.filter (fun x -> x = '#')) |> Array.length
+let result1 = run rules iterations startingImage |> numOfPixels
 printfn "Solution 1: %i" result1
 
+//findMatch rules startingImage
 
+let p = parsePattern "#../.../..."
+findMatch rules p
+rules |> List.filter (fun i -> doesMatch p i.Input) |> List.iter (fun i -> printImage i.Output)
+p 
+    |> rotateRight 
+    |> rotateRight
+    |> rotateRight 
+    |> rotateRight 
+    |> rotateRight |> printImage
 
